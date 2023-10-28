@@ -1,0 +1,35 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+?>
+<div class="p-5 mb-4 bg-light rounded-3">
+    <h1 class="display-4">Lista de clientes</h1>
+    <hr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Email</th>
+                <th>Endereço</th>
+                <th></th> <!-- Coluna para botão Alterar -->
+                <th></th> <!-- Coluna para botão Excluir -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Exemplo de linha de cliente -->
+            <tr>
+                <td>1</td>
+                <td>João Silva</td>
+                <td>(11) 1234-5678</td>
+                <td>joao.silva@email.com</td>
+                <td>Rua das Flores, 123, Cidade, UF</td>
+                <td><button class="btn btn-warning">Alterar</button></td>
+                <td><button class="btn btn-danger">Excluir</button></td>
+            </tr>
+            <!-- Adicione mais linhas conforme necessário -->
+        </tbody>
+    </table>
+</div>

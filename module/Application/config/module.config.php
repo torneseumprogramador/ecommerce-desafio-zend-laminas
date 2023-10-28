@@ -21,6 +21,16 @@ return [
                     ],
                 ],
             ],
+            'clientes' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/clientes',
+                    'defaults' => [
+                        'controller' => Controller\ClientesController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -36,6 +46,7 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
+            Controller\ClientesController::class => Controller\Factory\GenericControllerFactory::class,
         ],
     ],
     'view_manager' => [

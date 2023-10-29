@@ -1,0 +1,1 @@
+./vendor/bin/doctrine-migrations generate --configuration=data/Migrations/migrations-config.php

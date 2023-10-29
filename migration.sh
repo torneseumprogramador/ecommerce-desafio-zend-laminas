@@ -1,0 +1,1 @@
+yes | ./vendor/bin/doctrine-migrations migrate --configuration=data/Migrations/migrations-config.php --db-configuration=data/Migrations/migrations-db.php

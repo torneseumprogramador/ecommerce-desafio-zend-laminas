@@ -5,6 +5,31 @@
 ?>
 <div class="p-5 mb-4 bg-light rounded-3">
     <h1 class="display-4">Lista de clientes</h1>
+    <a href="/clientes/novo" class="btn btn-primary">Novo</a>
+    <?php
+    $flashMessenger = $this->flashMessenger();
+    if ($flashMessenger->hasSuccessMessages()):
+    ?>
+    <br><br>
+    <div class="alert alert-success">
+        <?php foreach ($flashMessenger->getSuccessMessages() as $message): ?>
+            <?= $this->escapeHtml($message); ?><br>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php
+    $flashMessenger = $this->flashMessenger();
+    if ($flashMessenger->hasErrorMessages()):
+    ?>
+    <br><br>
+    <div class="alert alert-danger">
+        <?php foreach ($flashMessenger->getErrorMessages() as $message): ?>
+            <?= $this->escapeHtml($message); ?><br>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
     <hr>
     <table class="table table-striped">
         <thead>
@@ -19,17 +44,21 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Exemplo de linha de cliente -->
-            <tr>
-                <td>1</td>
-                <td>João Silva</td>
-                <td>(11) 1234-5678</td>
-                <td>joao.silva@email.com</td>
-                <td>Rua das Flores, 123, Cidade, UF</td>
-                <td><button class="btn btn-warning">Alterar</button></td>
-                <td><button class="btn btn-danger">Excluir</button></td>
-            </tr>
-            <!-- Adicione mais linhas conforme necessário -->
+            <?php foreach ($this->clientes as $cliente): ?>
+                <tr>
+                    <td><?= $cliente->id; ?></td>
+                    <td><?= $cliente->nome; ?></td>
+                    <td><?= $cliente->telefone; ?></td>
+                    <td><?= $cliente->email; ?></td>
+                    <td><?= $cliente->endereco; ?></td>
+                    <td><a href="/clientes/<?= $cliente->id ?>/editar" class="btn btn-warning">Alterar</a></td>
+                    <td><a href="/clientes/<?= $cliente->id ?>/excluir" onclick="return confirm('Confirma?')" class="btn btn-danger">Excluir</a></td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
+
+    <div class="pagination">
+        <?= $this->paginationControl($clientes, 'Sliding', 'layout/paginator', ['route' => 'clientes']); ?>
+    </div>
 </div>

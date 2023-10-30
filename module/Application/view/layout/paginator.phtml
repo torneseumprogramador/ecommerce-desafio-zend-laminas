@@ -1,0 +1,22 @@
+<?php if ($this->pageCount): ?>
+<div class="pagination">
+    <ul class="pagination">
+        <!-- Primeira página -->
+        <li class="<?= ($this->current == 1) ? 'disabled' : ''; ?>">
+            <a href="<?= $this->url('clientes', [], ['query' => ['page' => 1]]); ?>">Primeira</a>
+        </li>
+
+        <!-- Páginas anteriores -->
+        <?php foreach ($this->pagesInRange as $page): ?>
+        <li class="<?= ($page == $this->current) ? 'active' : ''; ?>">
+            <a href="<?= $this->url('clientes', [], ['query' => ['page' => $page]]); ?>"><?= $page; ?></a>
+        </li>
+        <?php endforeach; ?>
+
+        <!-- Última página -->
+        <li class="<?= ($this->current == $this->pageCount) ? 'disabled' : ''; ?>">
+            <a href="<?= $this->url('clientes', [], ['query' => ['page' => $this->pageCount]]); ?>">Última</a>
+        </li>
+    </ul>
+</div>
+<?php endif; ?>

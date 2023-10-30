@@ -10,3 +10,47 @@
     background-color: var(--brand-color);
     border-color: var(--brand-color);
 }
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.pagination ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.pagination li {
+    display: inline;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.pagination li a {
+    color: #007BFF;
+    padding: 5px 10px;
+    border: 1px solid #007BFF;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.pagination li a:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
+.pagination li.active a {
+    background-color: #007BFF;
+    color: white;
+}
+
+.pagination li.disabled a {
+    color: #ccc;
+    border-color: #ccc;
+    pointer-events: none;
+}

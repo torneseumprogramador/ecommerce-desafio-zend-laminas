@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ * @var \Application\Entity\Cliente $cliente // Supondo que você passou a entidade Cliente para a view
+ */
+?>
+
+<div class="p-5 mb-4 bg-light rounded-3">
+    <h1 class="display-4">Novo cliente</h1>
+    <hr>
+    <form action="/clientes/criar" method="post">
+        <?= $this->partial('application/clientes/form-partial.phtml'); ?>
+    </form>
+</div>

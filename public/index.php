@@ -31,6 +31,4 @@ if (! class_exists(Application::class)) {
 }
 
 $container = require __DIR__ . '/../config/container.php';
-// Run the application!
-$container->get('Application')
-    ->run();
+$container->get('Application')->run();

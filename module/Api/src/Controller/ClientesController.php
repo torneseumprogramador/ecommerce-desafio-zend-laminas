@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Controller;
+namespace Api\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use \Doctrine\ORM\EntityManager;
-use \Application\Entity\Cliente;
+use \Api\Entity\Cliente;
 use Laminas\Paginator\Paginator;
 use Laminas\Paginator\Adapter\ArrayAdapter;
 

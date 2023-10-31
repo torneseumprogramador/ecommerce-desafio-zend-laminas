@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Api;
 
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -14,7 +14,7 @@ return [
             'home' => [
                 'type'    => Literal::class,
                 'options' => [
-                    'route'    => '/',
+                    'route'    => '/api',
                     'defaults' => [
                         'controller' => Controller\HomeController::class,
                         'action'     => 'index',
@@ -24,7 +24,7 @@ return [
             'clientes' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/clientes',
+                    'route'    => '/api/clientes',
                     'defaults' => [
                         'controller' => Controller\ClientesController::class,
                         'action'     => 'index',
@@ -32,33 +32,12 @@ return [
                 ],
                 'may_terminate' => true, // permitir que esta rota seja terminável
                 'child_routes'  => [ // rotas filhas
-                    'novo' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/novo',
-                            'defaults' => [
-                                'action' => 'novo',
-                            ],
-                        ],
-                    ],
                     'criar' => [
                         'type' => Segment::class,
                         'options' => [
                             'route' => '/criar',
                             'defaults' => [
                                 'action' => 'criar',
-                            ],
-                        ],
-                    ],
-                    'editar' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/[:id]/editar',
-                            'constraints' => [
-                                'id' => '[0-9]+', // restringir o ID para conter apenas números
-                            ],
-                            'defaults' => [
-                                'action' => 'editar',
                             ],
                         ],
                     ],
@@ -88,10 +67,10 @@ return [
                     ],
                 ],
             ],
-            'application' => [
+            'api' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '/api[/:action]',
                     'defaults' => [
                         'controller' => Controller\HomeController::class,
                         'action'     => 'index',
@@ -106,31 +85,9 @@ return [
             Controller\ClientesController::class => Controller\Factory\GenericControllerFactory::class,
         ],
     ],
-    'controller_plugins' => [
-        'factories' => [
-            \Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
-        ],
-        'aliases' => [
-            'flashMessenger' => \Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class,
-        ],
-    ],
     'view_manager' => [
-        'display_not_found_reason' => true,
-        'display_exceptions'       => true,
-        'doctype'                  => 'HTML5',
-        'not_found_template'       => 'error/404',
-        'exception_template'       => 'error/index',
-        'template_map' => [
-            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
-            'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-            'error/404'               => __DIR__ . '/../view/error/404.phtml',
-            'error/index'             => __DIR__ . '/../view/error/index.phtml',
-        ],
-        'template_path_stack' => [
-            'application' => __DIR__ . '/../view',
-        ],
-        'template_map' => [
-            'pagination-control' => __DIR__ . '/../view/layout/paginator.phtml',
+        'strategies' => [
+            'ViewJsonStrategy', // Adicione isso ao seu view_manager
         ],
     ],
 ];

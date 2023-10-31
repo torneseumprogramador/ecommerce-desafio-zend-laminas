@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
-use Application\Controller\IndexController;
+use Application\Controller\HomeController;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
-class IndexControllerTest extends AbstractHttpControllerTestCase
+class HomeControllerTest extends AbstractHttpControllerTestCase
 {
     public function setUp(): void
     {

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Api\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\View\Model\ViewModel;
 use \Doctrine\ORM\EntityManager;
-use \Api\Entity\Cliente;
+use \Application\Entity\Cliente;
 use Laminas\Paginator\Paginator;
 use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\View\Model\JsonModel;
+use Api\Servico\ObjetoParaArray;
 
 class ClientesController extends AbstractActionController
 {
@@ -22,21 +23,20 @@ class ClientesController extends AbstractActionController
 
     public function indexAction()
     {
+        $request = $this->getRequest();
+        if (!$request->isGet()) {
+            $this->getResponse()->setStatusCode(405);
+            return new JsonModel(["mensagem" => "Método não permitido, somente GET"]);
+        }
+
         $allClientes = $this->entityManager->getRepository(Cliente::class)->findAll();
     
         $page = (int) $this->params()->fromQuery('page', 1);
         $paginator = new Paginator(new ArrayAdapter($allClientes));
         $paginator->setCurrentPageNumber($page);
-        $paginator->setItemCountPerPage(5);
+        $paginator->setItemCountPerPage(50);
     
-        return new ViewModel([
-            'clientes' => $paginator
-        ]);
-    }
-
-    public function novoAction()
-    {
-        return new ViewModel();
+        return new JsonModel($paginator);
     }
 
     public function criarAction()
@@ -44,28 +44,31 @@ class ClientesController extends AbstractActionController
         $request = $this->getRequest();
         if (!$request->isPost()) {
             $this->getResponse()->setStatusCode(405);
-            return;
+            return new JsonModel(["mensagem" => "Método não permitido, somente POST"]);
         }
 
-        $postData = $request->getPost();
-
-        if (!$postData['nome']) {
-            $this->flashMessenger()->addErrorMessage('Nome é obrigatório');
-            return $this->redirect()->toRoute('clientes/novo');
+        $content = $request->getContent();
+        $jsonData = json_decode($content, true); 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->getResponse()->setStatusCode(400);
+            return new JsonModel(["mensagem" => "JSON enviado é inválido"]);
         }
+
+        if (!$jsonData['nome']) {
+            $this->getResponse()->setStatusCode(400);
+            return new JsonModel(["mensagem" => "Nome obrigatório"]);
+        }        
 
         $cliente = new Cliente();
-        $cliente->nome = $postData['nome'];
-        $cliente->telefone = $postData['telefone'];
-        $cliente->email = $postData['email'];
-        $cliente->endereco = $postData['endereco'];
+        $cliente->nome = $jsonData['nome'];
+        $cliente->telefone = $jsonData['telefone'];
+        $cliente->email = $jsonData['email'];
+        $cliente->endereco = $jsonData['endereco'];
 
         $this->entityManager->persist($cliente);
         $this->entityManager->flush();
 
-        $this->flashMessenger()->addSuccessMessage('Cliente criado com sucesso!');
-
-        return $this->redirect()->toRoute('clientes');
+        return new JsonModel(ObjetoParaArray::convertObjectToArray($cliente));
     }
 
     public function editarAction()
@@ -94,68 +97,102 @@ class ClientesController extends AbstractActionController
 
     public function excluirAction()
     {
+        $request = $this->getRequest();
+        if (!$request->isDelete()) {
+            $this->getResponse()->setStatusCode(405);
+            return new JsonModel(["mensagem" => "Método não permitido, somente DELETE"]);
+        }
+
         $id = (int) $this->params()->fromRoute('id', 0);
 
         if (!$id) {
-            $this->flashMessenger()->addErrorMessage('Cliente não encontrado!');
-            return $this->redirect()->toRoute('clientes');
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "Id ($id) não encontrado"]);
         }
 
         $cliente = $this->entityManager->find(Cliente::class, $id);
 
         if (!$cliente) {
-            $this->flashMessenger()->addErrorMessage('Cliente não encontrado!');
-            return $this->redirect()->toRoute('clientes');
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "cliente de Id ($id) não encontrado"]);
         }
 
         $this->entityManager->remove($cliente);
         $this->entityManager->flush();
 
-        // Adicionar mensagem de sucesso após a exclusão
-        $this->flashMessenger()->addSuccessMessage('Cliente removido com sucesso!');
-
-        return $this->redirect()->toRoute('clientes');
+        $this->getResponse()->setStatusCode(200);
+        return new JsonModel(["mensagem" => "Item excluido com sucesso"]);
     }
 
     public function alterarAction()
     {
         $request = $this->getRequest();
-        if (!$request->isPost()) {
+        if (!$request->isPut()) {
             $this->getResponse()->setStatusCode(405);
-            return;
+            return new JsonModel(["mensagem" => "Método não permitido, somente PUT"]);
         }
 
         $id = (int) $this->params()->fromRoute('id', 0);
 
         if (!$id) {
-            return $this->redirect()->toRoute('clientes');
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "Id ($id) não encontrado"]);
         }
 
         $cliente = $this->entityManager->find(Cliente::class, $id);
 
         if (!$cliente) {
-            return $this->redirect()->toRoute('clientes');
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "cliente de Id ($id) não encontrado"]);
+        }
+       
+        $content = $request->getContent();
+        $jsonData = json_decode($content, true); 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->getResponse()->setStatusCode(400);
+            return new JsonModel(["mensagem" => "JSON enviado é inválido"]);
         }
 
-        $postData = $request->getPost();
-
-        
-        if (!$postData['nome']) {
-            $this->flashMessenger()->addErrorMessage('Nome é obrigatório');
-            return $this->redirect()->toRoute('clientes/editar', ['id' => $id]);
+        if (!$jsonData['nome']) {
+            $this->getResponse()->setStatusCode(400);
+            return new JsonModel(["mensagem" => "Nome obrigatório"]);
         }
 
-        $cliente->nome = $postData['nome'];
-        $cliente->telefone = $postData['telefone'];
-        $cliente->email = $postData['email'];
-        $cliente->endereco = $postData['endereco'];
+        $cliente->nome = $jsonData['nome'];
+        $cliente->telefone = $jsonData['telefone'];
+        $cliente->email = $jsonData['email'];
+        $cliente->endereco = $jsonData['endereco'];
 
         $this->entityManager->persist($cliente);
         $this->entityManager->flush();
 
-        $this->flashMessenger()->addSuccessMessage('Cliente atualizado com sucesso!');
+        return new JsonModel(ObjetoParaArray::convertObjectToArray($cliente));
+    }
 
-        return $this->redirect()->toRoute('clientes');
+
+    public function mostrarAction()
+    {
+        $request = $this->getRequest();
+        if (!$request->isGet()) {
+            $this->getResponse()->setStatusCode(405);
+            return new JsonModel(["mensagem" => "Método não permitido, somente GET"]);
+        }
+
+        $id = (int) $this->params()->fromRoute('id', 0);
+
+        if (!$id) {
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "Id ($id) não encontrado"]);
+        }
+
+        $cliente = $this->entityManager->find(Cliente::class, $id);
+
+        if (!$cliente) {
+            $this->getResponse()->setStatusCode(404);
+            return new JsonModel(["mensagem" => "cliente de Id ($id) não encontrado"]);
+        }
+       
+        return new JsonModel(ObjetoParaArray::convertObjectToArray($cliente));
     }
 
 }

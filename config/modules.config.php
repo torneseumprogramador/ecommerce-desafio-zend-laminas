@@ -21,5 +21,5 @@ return [
     'DoctrineModule',
     'DoctrineORMModule',
     'Application',
-    // 'Api',
+    'Api',
 ];
